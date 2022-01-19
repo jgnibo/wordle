@@ -41,7 +41,7 @@ class WordleEngine():
             print("Out of tries! The correct word was " + word)
 
     def requestWord(self):
-        userin = raw_input("Please enter a guess: ")
+        userin = input("Please enter a guess: ")
         if len(userin) != 5:
             print("Please enter a 5 letter word.")
             userin = self.requestWord()
