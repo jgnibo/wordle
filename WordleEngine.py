@@ -10,7 +10,6 @@ class WordleEngine():
         self.words = content.splitlines()
         self.wordTable = self.createWordTable()
         f.close()
-        # print(self.words)
 
     def getWords(self):
         return self.words
@@ -21,8 +20,6 @@ class WordleEngine():
             wordTable[word] = True
 
         return wordTable
-
-
 
     def startGame(self):
         word = random.choice(self.words)
