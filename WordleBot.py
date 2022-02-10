@@ -12,7 +12,7 @@ class WordleBot():
 
         self.results = []
         self.greyLetters = {}
-        self.yellows = []
+        self.colors = [] #make this self.colors
         self.yellowCount = {}
         
         self.alpha = "abcdefghijklmnopqrstuvwxyz"
@@ -43,11 +43,10 @@ class WordleBot():
         for char in self.alpha:
             self.yellowCount[char] = 0
 
-        for item in self.yellows:
+        for item in self.colors:
             if(item[1] == "yellow"):
                 self.yellowCount.update({item[0]: self.yellowCount[item[0]]+1})
-
-
+    
     def calculateWordScore(self, word):
         score = 0
 
@@ -68,62 +67,73 @@ class WordleBot():
         self.removeWords()
         for word in self.words:
             self.wordScores.append((word, self.calculateWordScore(word)))
-
         return self.wordScores
-    
+
+
+
     def checkGreys(self, word):
         for character in word:
             if(character in self.greyLetters):
                 return(False)
-        
         return(True)
+
 
     def checkYellows(self, word):
         i = 0
-
-        if(len(self.yellows)==0):
+        if(len(self.colors)==0):
             return(True)
-
         self.genLastYellowCount()
         yellowChecker = {}
-        
         for char in self.alpha:
             yellowChecker[char] = 0
 
         for character in word:
-            if((self.yellows[i][1] == "yellow") and (self.yellows[i][0] == character)):
+            if((self.colors[i][1] == "yellow") and (self.colors[i][0] == character)):
                 return(False)
             elif(self.yellowCount[character]!=0):
                 yellowChecker.update({character: yellowChecker[character] + 1})
-
             i += 1
-        
 
         for char in yellowChecker:
-            if yellowChecker[char] != self.yellowCount[char]:
+            if yellowChecker[char] < self.yellowCount[char]:
                 return(False)
-            
         return(True)
+
     
-    def updateYellows(self, lst):
-        self.yellows = lst
+    def checkGreens(self, word):
+        i = 0
+        if(len(self.colors)==0):
+            return(True)
+        for character in word:
+            if( (self.colors[i][1]=="green") and (self.colors[i][0] != character)):
+                return(False)
+            i+=1
+        return(True)
+
     
+    def updateColors(self, lst):
+        self.colors = lst
+
+        #also updates greys
+        for item in self.colors:
+            if item[1] == "grey":
+                self.greyLetters[item[0]] = 1
+
+
     def removeWords(self):
         wordLst = []
         for word in self.words:
-            if(self.checkYellows(word)==False or self.checkGreys(word)==False):
+            if(self.checkYellows(word)==False or self.checkGreys(word)==False or self.checkGreens(word)==False):
                 wordLst.append(word)
-        
         for word in wordLst:
             self.words.remove(word)
+        
 
     def findNextWord(self):
         top = 0
-
         for index, wordTuple in enumerate(self.wordScores):
             if wordTuple[1] > self.wordScores[top][1]:
                 top = index
-
         return self.wordScores[top]
 
 
@@ -132,14 +142,22 @@ def main():
     print(wordle_bot.checkYellows("ioeoi"))
     wordle_bot.generateWordScore()
     print(wordle_bot.findNextWord())
-    wordle_bot.updateYellows([('a', 'yellow'), ('r', 'yellow'), ('o', 'grey'), ('s', 'yellow'), ('e', 'grey')])
-    wordle_bot.greyLetters["o"] = 1
+
+    wordle_bot.updateColors([('a', 'grey'), ('r', 'grey'), ('o', 'grey'), ('s', 'grey'), ('e', 'grey')])
     wordle_bot.generateWordScore()
     print(wordle_bot.findNextWord())
-    wordle_bot.updateYellows([('l', 'grey'), ('a', 'yellow'), ('s', 'yellow'), ('e', 'yellow'), ('r', 'yellow')])
-    wordle_bot.greyLetters["l"] = 1
+
+    wordle_bot.updateColors([('u', 'grey'), ('n', 'grey'), ('t', 'grey'), ('i', 'yellow'), ('l', 'yellow')])
     wordle_bot.generateWordScore()
     print(wordle_bot.findNextWord())
+
+    wordle_bot.updateColors([('c', 'grey'), ('h', 'grey'), ('i', 'yellow'), ('l', 'green'), ('d', 'yellow')])
+    wordle_bot.generateWordScore()
+    print(wordle_bot.findNextWord())
+
+    
+    
+    
 
 
 
