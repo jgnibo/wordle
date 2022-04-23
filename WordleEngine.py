@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import random
+from WordleBot import WordleBot
+import time
 
 
 class WordleEngine():
@@ -36,6 +38,26 @@ class WordleEngine():
             print("Congratulations! You guessed " + userin + " correctly!")
         else:
             print("Out of tries! The correct word was " + word)
+    
+    def runBotGame(self):
+        word = random.choice(self.words)
+        wordle_bot = WordleBot("words.txt")
+        tries = 1
+        wordle_bot.generateWordScore()
+        botin = wordle_bot.findNextWord()
+        while botin != word and tries < 6:
+            analyzed = self.analyzeGuess(botin, word)
+            wordle_bot.updateGreys(analyzed)
+            wordle_bot.generateWordScore()
+            botin = wordle_bot.findNextWord()
+            tries +=1
+        
+        analyzed = self.analyzeGuess(botin, word)
+        if botin == word:
+            return(tries, 1)
+        else:
+            return(None, 0)
+
 
     def requestWord(self):
         userin = input("Please enter a guess: ")
@@ -57,7 +79,6 @@ class WordleEngine():
             else:
                 wordFrequencyMap[character] = 1
 
-        print("guess", guess)
         result = []  # Result is a tuple with character and wordle value (grey, green, yellow)
         for count, character in enumerate(guess):  # First we check for any characters in the correct place. All
             # other characters are set to grey tentatively
@@ -81,7 +102,15 @@ class WordleEngine():
 
 def main():
     wordle_engine = WordleEngine("words.txt")
-    wordle_engine.startGame()
+    total = 0
+    for i in range(100):
+        tries = wordle_engine.runBotGame()[0]
+        print(i)
+        if tries != None:
+            total+=tries
+    
+    print(total/100)
+
 
 
 if __name__ == "__main__":

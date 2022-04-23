@@ -111,13 +111,21 @@ class WordleBot():
         return(True)
 
     
-    def updateColors(self, lst):
+    def updateGreys(self, lst):
         self.colors = lst
-
+        greys = []
+        notgrey = []
         #also updates greys
         for item in self.colors:
             if item[1] == "grey":
-                self.greyLetters[item[0]] = 1
+                greys.append(item[0])
+            else:
+                notgrey.append(item[0])
+
+        for letter in greys:
+            if letter not in notgrey:
+                self.greyLetters[letter] = 1
+
 
 
     def removeWords(self):
@@ -134,28 +142,22 @@ class WordleBot():
         for index, wordTuple in enumerate(self.wordScores):
             if wordTuple[1] > self.wordScores[top][1]:
                 top = index
-        return self.wordScores[top]
+        return self.wordScores[top][0]
 
 
 def main():
     wordle_bot = WordleBot("words.txt")
-    print(wordle_bot.checkYellows("ioeoi"))
     wordle_bot.generateWordScore()
     print(wordle_bot.findNextWord())
 
-    wordle_bot.updateColors([('a', 'grey'), ('r', 'grey'), ('o', 'grey'), ('s', 'grey'), ('e', 'grey')])
+    wordle_bot.updateGreys([('a', 'yellow'), ('r', 'grey'), ('o', 'grey'), ('s', 'grey'), ('e', 'green')])
     wordle_bot.generateWordScore()
     print(wordle_bot.findNextWord())
 
-    wordle_bot.updateColors([('u', 'grey'), ('n', 'grey'), ('t', 'grey'), ('i', 'yellow'), ('l', 'yellow')])
+    wordle_bot.updateGreys([('p', 'green'), ('l', 'green'), ('a', 'green'), ('t', 'grey'), ('e', 'green')])
     wordle_bot.generateWordScore()
     print(wordle_bot.findNextWord())
 
-    wordle_bot.updateColors([('c', 'grey'), ('h', 'grey'), ('i', 'yellow'), ('l', 'green'), ('d', 'yellow')])
-    wordle_bot.generateWordScore()
-    print(wordle_bot.findNextWord())
-
-    
     
     
 
